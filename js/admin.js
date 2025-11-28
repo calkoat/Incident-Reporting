@@ -3,7 +3,7 @@
 
 // ⚙️ CONFIGURATION API
 // IMPORTANT: Remplacez cette URL par votre vraie API backend
-const API_URL = //'https://incidentdb.documents.azure.com/;AccountKey=kFOrNuez8niq1mQ9ibeZtvEEcfvc7E0Gxp1aYUaj8aqIXMo9h3nzelJKgnVOQ2a85ieSCPytVtgfACDb71YlUQ==';
+const API_URL = 'https://incidentdb.documents.azure.com/;AccountKey=kFOrNuez8niq1mQ9ibeZtvEEcfvc7E0Gxp1aYUaj8aqIXMo9h3nzelJKgnVOQ2a85ieSCPytVtgfACDb71YlUQ==';
 
 
 
@@ -31,7 +31,7 @@ async function loadIncidents() {
         }
         
         allIncidents = await response.json();
-        */
+        
 
         // 🧪 MODE TEST - Données de démonstration
         allIncidents = [
@@ -172,7 +172,7 @@ async function resolveIncident(id) {
 
     try {
         // 🌐 APPEL API - Décommentez quand l'API est prête
-        /*
+        
         const response = await fetch(`${API_URL}/incidents/${id}`, {
             method: 'PATCH',
             headers: {
@@ -184,7 +184,7 @@ async function resolveIncident(id) {
         if (!response.ok) {
             throw new Error('Erreur lors de la mise à jour');
         }
-        */
+        
 
         // 🧪 MODE TEST - Mise à jour locale
         const incident = allIncidents.find(i => i.id === id);
