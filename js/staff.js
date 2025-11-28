@@ -2,7 +2,7 @@
 
 // ⚙️ CONFIGURATION API
 // IMPORTANT: Remplacez cette URL par votre vraie API backend
-const API_URL = 'https://votre-api-backend.com/api';
+const API_URL = 'https://auth-function-gxhecshmffhaf8c4.francecentral-01.azurewebsites.net/api/incident-pin-auth';
 
 // 📝 Récupération des éléments DOM
 const pinInput = document.getElementById('pinInput');
