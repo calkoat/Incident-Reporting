@@ -178,55 +178,7 @@
 </head>
    
     
-    <script>
-document.getElementById("incidentForm").addEventListener("submit", async function (event) {
 
-    event.preventDefault(); // Stop rechargement de la page
-
-    // Récupération des champs
-    const zone = document.getElementById("zone").value;
-    const category = document.getElementById("category").value;
-    const description = document.getElementById("description").value;
-
-    // Vérification basique
-    if (!zone || !category || !description) {
-        alert("⚠️ Veuillez remplir tous les champs.");
-        return;
-    }
-
-    // DEBUG console
-    console.log("➡ Envoi à AWS :", { zone, category, description });
-
-    try {
-        const response = await fetch(
-            "https://r5f7kujvb1.execute-api.eu-north-1.amazonaws.com/can2025",
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    zone: zone,
-                    category: category,
-                    description: description
-                })
-            }
-        );
-
-        const result = await response.json();
-        console.log("Réponse AWS :", result);
-
-        if (response.ok && result.success) {
-            alert("✅ Email envoyé avec succès !");
-            document.getElementById("incidentForm").reset();
-        } else {
-            alert("❌ Erreur AWS : " + (result.error || "Erreur inconnue"));
-        }
-
-    } catch (error) {
-        console.error(error);
-        alert("❌ Erreur réseau : impossible de contacter l’API.");
-    }
-});
-</script>
 
 
     
@@ -289,7 +241,8 @@ document.getElementById("incidentForm").addEventListener("submit", async functio
         </div>
     </div>
 
-    <!-- -------------------- JAVASCRIPT CORRIGÉ -------------------- -->
+
+    
     <script>
         document.getElementById('submitBtn').addEventListener('click', async function(event) {
             event.preventDefault(); // Empêche le rechargement de la page
@@ -316,7 +269,7 @@ document.getElementById("incidentForm").addEventListener("submit", async functio
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.textContent = '📤 Envoi en cours...';
-
+/*
             try {
                 // Appel à ton API AWS
                 const response = await fetch('https://r5f7kujvb1.execute-api.eu-north-1.amazonaws.com/can2025', {
@@ -330,7 +283,7 @@ document.getElementById("incidentForm").addEventListener("submit", async functio
                         description: description
                     })
                 });
-
+                
                 const result = await response.json();
 
                 if (response.ok && result.success) {
@@ -353,6 +306,7 @@ document.getElementById("incidentForm").addEventListener("submit", async functio
                 submitBtn.disabled = false;
                 submitBtn.textContent = '🚨 Envoyer le Signalement';
             }
+            */
         });
 
         // Validation automatique du PIN (seulement des chiffres)
