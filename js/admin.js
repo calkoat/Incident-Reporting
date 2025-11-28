@@ -172,6 +172,7 @@ async function resolveIncident(id) {
 
     try {
         // 🌐 APPEL API - Décommentez quand l'API est prête
+        /*
         const response = await fetch(`${API_URL}/incidents/${id}`, {
             method: 'PATCH',
             headers: {
