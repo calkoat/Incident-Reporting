@@ -319,7 +319,7 @@ document.getElementById("incidentForm").addEventListener("submit", async functio
 
             try {
                 // Appel à ton API AWS
-                const response = await fetch('https://r5f7kujvb1.execute-api.eu-north-1.amazonaws.com/default/CAN2025-incident-notifier', {
+                const response = await fetch('https://r5f7kujvb1.execute-api.eu-north-1.amazonaws.com/', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json'
