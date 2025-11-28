@@ -3,7 +3,7 @@
 
 // ⚙️ CONFIGURATION API
 // IMPORTANT: Remplacez cette URL par votre vraie API backend
-const API_URL = 'https://auth-function-gxhecshmffhaf8c4.francecentral-01.azurewebsites.net/api/incident-pin-auth';
+const API_URL = 'https://incidentdb.documents.azure.com/;AccountKey=kFOrNuez8niq1mQ9ibeZtvEEcfvc7E0Gxp1aYUaj8aqIXMo9h3nzelJKgnVOQ2a85ieSCPytVtgfACDb71YlUQ==';
 
 
 
@@ -24,7 +24,6 @@ let allIncidents = [];
 async function loadIncidents() {
     try {
         // 🌐 APPEL API - Décommentez quand l'API est prête
-        /*
         const response = await fetch(`${API_URL}/incidents`);
         
         if (!response.ok) {
@@ -173,7 +172,6 @@ async function resolveIncident(id) {
 
     try {
         // 🌐 APPEL API - Décommentez quand l'API est prête
-        /*
         const response = await fetch(`${API_URL}/incidents/${id}`, {
             method: 'PATCH',
             headers: {
