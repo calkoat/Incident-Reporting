@@ -1,8 +1,15 @@
+
 // admin.js - Logique pour le dashboard admin
 
 // ⚙️ CONFIGURATION API
 // IMPORTANT: Remplacez cette URL par votre vraie API backend
 const API_URL = 'https://votre-api-backend.com/api';
+
+
+if (pin !== "1234") {
+    window.location.href = "decode-pin.html";
+}
+
 
 // 📝 Récupération des éléments DOM
 const totalCount = document.getElementById('totalCount');
