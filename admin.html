@@ -245,10 +245,11 @@
         .table {
             margin: 0;
             color: #e0e0e0;
+            background: transparent;
         }
 
         .table thead {
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(102, 126, 234, 0.15);
         }
 
         .table thead th {
@@ -261,22 +262,33 @@
             color: #b8b8d1;
         }
 
+        .table tbody {
+            background: rgba(20, 20, 35, 0.4);
+        }
+
         .table tbody td {
             border: none;
             padding: 20px;
-            border-top: 1px solid rgba(102, 126, 234, 0.1);
+            border-top: 1px solid rgba(102, 126, 234, 0.15);
+            color: #e0e0e0;
         }
 
         .table tbody tr {
             transition: all 0.2s ease;
+            background: transparent;
         }
 
         .table tbody tr:hover {
-            background: rgba(102, 126, 234, 0.05);
+            background: rgba(102, 126, 234, 0.1);
         }
 
         .table tbody tr.resolved {
-            opacity: 0.6;
+            opacity: 0.5;
+            color: #a0a0a0;
+        }
+
+        .table tbody tr.resolved td {
+            color: #a0a0a0;
         }
 
         .badge-modern {
