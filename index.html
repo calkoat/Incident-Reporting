@@ -176,6 +176,60 @@
 
     </style>
 </head>
+   
+    
+    <script>
+document.getElementById("incidentForm").addEventListener("submit", async function (event) {
+
+    event.preventDefault(); // Stop rechargement de la page
+
+    // Récupération des champs
+    const zone = document.getElementById("zone").value;
+    const category = document.getElementById("category").value;
+    const description = document.getElementById("description").value;
+
+    // Vérification basique
+    if (!zone || !category || !description) {
+        alert("⚠️ Veuillez remplir tous les champs.");
+        return;
+    }
+
+    // DEBUG console
+    console.log("➡ Envoi à AWS :", { zone, category, description });
+
+    try {
+        const response = await fetch(
+            "https://r5f7kujvb1.execute-api.eu-north-1.amazonaws.com/default/CAN2025-incident-notifier",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    zone: zone,
+                    category: category,
+                    description: description
+                })
+            }
+        );
+
+        const result = await response.json();
+        console.log("Réponse AWS :", result);
+
+        if (response.ok && result.success) {
+            alert("✅ Email envoyé avec succès !");
+            document.getElementById("incidentForm").reset();
+        } else {
+            alert("❌ Erreur AWS : " + (result.error || "Erreur inconnue"));
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("❌ Erreur réseau : impossible de contacter l’API.");
+    }
+});
+</script>
+
+
+    
 <body>
     <div class="main-container">
         <div class="logo-header">
