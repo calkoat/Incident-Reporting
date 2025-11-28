@@ -1,265 +1,281 @@
+// Configuration de l'API
+const API_BASE_URL = 'https://YOUR-AZURE-FUNCTION-APP.azurewebsites.net/api';
 
-// admin.js - Logique pour le dashboard admin
-
-// ⚙️ CONFIGURATION API
-// IMPORTANT: Remplacez cette URL par votre vraie API backend
-const API_URL = 'https://votre-api-backend.com/api';
-
-
-if (pin !== "1234") {
-    window.location.href = "decode-pin.html";
-}
-
-
-// 📝 Récupération des éléments DOM
-const totalCount = document.getElementById('totalCount');
-const openCount = document.getElementById('openCount');
-const resolvedCount = document.getElementById('resolvedCount');
-const incidentsTable = document.getElementById('incidentsTable');
-const filterZone = document.getElementById('filterZone');
-const filterCategory = document.getElementById('filterCategory');
-const filterStatus = document.getElementById('filterStatus');
-const refreshBtn = document.getElementById('refreshBtn');
-
-// 💾 Stockage local des incidents
+// Variable globale pour stocker les incidents
 let allIncidents = [];
 
-// 🌐 Charger les incidents depuis l'API
-async function loadIncidents() {
-    try {
-        // 🌐 APPEL API - Décommentez quand l'API est prête
-        /*
-        const response = await fetch(`${API_URL}/incidents`);
-        
-        if (!response.ok) {
-            throw new Error('Erreur lors du chargement');
+// ====== MODE TEST : Données de démonstration ======
+const TEST_MODE = true; // Changez à false quand l'API est prête
+
+const DEMO_INCIDENTS = [
+    {
+        id: '1a2b3c4d',
+        zone: 'A1',
+        category: 'Médical',
+        description: 'Un spectateur a fait un malaise dans la tribune Nord',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        status: 'Ouvert'
+    },
+    {
+        id: '2b3c4d5e',
+        zone: 'B2',
+        category: 'Sécurité',
+        description: 'Altercation entre deux groupes de supporters',
+        timestamp: new Date(Date.now() - 7200000).toISOString(),
+        status: 'Résolu'
+    },
+    {
+        id: '3c4d5e6f',
+        zone: 'C1',
+        category: 'Technique',
+        description: 'Panne d\'éclairage dans les vestiaires',
+        timestamp: new Date(Date.now() - 1800000).toISOString(),
+        status: 'Ouvert'
+    },
+    {
+        id: '4d5e6f7g',
+        zone: 'A2',
+        category: 'Médical',
+        description: 'Blessure mineure nécessitant des premiers soins',
+        timestamp: new Date(Date.now() - 5400000).toISOString(),
+        status: 'Résolu'
+    },
+    {
+        id: '5e6f7g8h',
+        zone: 'B1',
+        category: 'Sécurité',
+        description: 'Objet suspect signalé sous un siège',
+        timestamp: new Date(Date.now() - 900000).toISOString(),
+        status: 'Ouvert'
+    },
+    {
+        id: '6f7g8h9i',
+        zone: 'C2',
+        category: 'Autre',
+        description: 'Problème avec le système de sonorisation VIP',
+        timestamp: new Date(Date.now() - 2700000).toISOString(),
+        status: 'Ouvert'
+    }
+];
+
+// Authentification Admin
+document.getElementById('adminAuthForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const pin = document.getElementById('adminPin').value;
+    const authMessage = document.getElementById('authMessage');
+    
+    if (TEST_MODE) {
+        // MODE TEST : Accepter n'importe quel code à 4 chiffres
+        if (pin.length === 4 && /^\d+$/.test(pin)) {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            loadIncidents();
+        } else {
+            authMessage.innerHTML = '<div class="alert alert-danger">Le code PIN doit contenir 4 chiffres</div>';
         }
+        return;
+    }
+    
+    // MODE PRODUCTION : Vérification avec API
+    try {
+        const response = await fetch(`${API_BASE_URL}/verify-pin`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ pin })
+        });
         
-        allIncidents = await response.json();
-        */
-
-        // 🧪 MODE TEST - Données de démonstration
-        allIncidents = [
-            {
-                id: 1,
-                zone: 'A1',
-                category: 'Médical',
-                description: 'Blessure légère au genou, premiers soins nécessaires',
-                timestamp: '2025-11-23T14:30:00',
-                status: 'Ouvert'
-            },
-            {
-                id: 2,
-                zone: 'B2',
-                category: 'Sécurité',
-                description: 'Barrière de sécurité endommagée près de la scène principale',
-                timestamp: '2025-11-23T15:15:00',
-                status: 'Ouvert'
-            },
-            {
-                id: 3,
-                zone: 'C1',
-                category: 'Technique',
-                description: 'Problème de son au niveau du système audio',
-                timestamp: '2025-11-23T13:00:00',
-                status: 'Résolu'
-            },
-            {
-                id: 4,
-                zone: 'A2',
-                category: 'Autre',
-                description: 'Poubelle renversée, nettoyage requis',
-                timestamp: '2025-11-23T16:00:00',
-                status: 'Ouvert'
-            },
-            {
-                id: 5,
-                zone: 'B1',
-                category: 'Sécurité',
-                description: 'Attroupement important, surveillance renforcée demandée',
-                timestamp: '2025-11-23T16:30:00',
-                status: 'Ouvert'
-            }
-        ];
-
-        // Mettre à jour l'affichage
-        updateStats();
-        displayIncidents();
-
+        const data = await response.json();
+        
+        if (data.valid && data.role === 'admin') {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            loadIncidents();
+        } else {
+            authMessage.innerHTML = '<div class="alert alert-danger">Code PIN admin invalide</div>';
+        }
     } catch (error) {
-        console.error('❌ Erreur chargement:', error);
-        incidentsTable.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center text-danger">
-                    ❌ Erreur lors du chargement des incidents
-                </td>
-            </tr>
+        authMessage.innerHTML = '<div class="alert alert-danger">Erreur de connexion</div>';
+    }
+});
+
+// Charger tous les incidents
+async function loadIncidents() {
+    if (TEST_MODE) {
+        // MODE TEST : Utiliser les données de démonstration
+        allIncidents = DEMO_INCIDENTS;
+        updateStatistics();
+        displayIncidents(allIncidents);
+        return;
+    }
+    
+    // MODE PRODUCTION : Charger depuis l'API
+    try {
+        const response = await fetch(`${API_BASE_URL}/incidents`);
+        allIncidents = await response.json();
+        
+        updateStatistics();
+        displayIncidents(allIncidents);
+    } catch (error) {
+        console.error('Erreur chargement incidents:', error);
+        document.getElementById('incidentsTable').innerHTML = `
+            <tr><td colspan="7" class="text-center text-danger">
+                Erreur de chargement des données
+            </td></tr>
         `;
     }
 }
 
-// 📊 Mettre à jour les statistiques
-function updateStats() {
-    const open = allIncidents.filter(i => i.status === 'Ouvert').length;
-    const resolved = allIncidents.filter(i => i.status === 'Résolu').length;
+// Afficher les incidents dans le tableau
+function displayIncidents(incidents) {
+    const tableBody = document.getElementById('incidentsTable');
     
-    totalCount.textContent = allIncidents.length;
-    openCount.textContent = open;
-    resolvedCount.textContent = resolved;
-}
-
-// 📋 Afficher les incidents dans le tableau
-function displayIncidents() {
-    // Appliquer les filtres
-    let filtered = allIncidents;
-
-    const zoneFilter = filterZone.value;
-    const categoryFilter = filterCategory.value;
-    const statusFilter = filterStatus.value;
-
-    if (zoneFilter) {
-        filtered = filtered.filter(i => i.zone === zoneFilter);
-    }
-
-    if (categoryFilter) {
-        filtered = filtered.filter(i => i.category === categoryFilter);
-    }
-
-    if (statusFilter) {
-        filtered = filtered.filter(i => i.status === statusFilter);
-    }
-
-    // Afficher les incidents
-    if (filtered.length === 0) {
-        incidentsTable.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center text-muted">
-                    📭 Aucun incident à afficher
-                </td>
-            </tr>
+    if (incidents.length === 0) {
+        tableBody.innerHTML = `
+            <tr><td colspan="7" class="text-center">
+                Aucun incident pour le moment
+            </td></tr>
         `;
         return;
     }
-
-    incidentsTable.innerHTML = filtered.map(incident => `
-        <tr>
-            <td><strong>#${incident.id}</strong></td>
+    
+    tableBody.innerHTML = incidents.map(incident => `
+        <tr class="${incident.status === 'Résolu' ? 'resolved' : ''}">
+            <td><strong>${incident.id.substring(0, 8)}</strong></td>
+            <td><span class="badge-modern badge-zone">${incident.zone}</span></td>
+            <td>${incident.category}</td>
+            <td>${incident.description.substring(0, 50)}${incident.description.length > 50 ? '...' : ''}</td>
+            <td>${formatDate(incident.timestamp)}</td>
             <td>
-                <span class="badge badge-zone">${incident.zone}</span>
-            </td>
-            <td>
-                ${getCategoryIcon(incident.category)} ${incident.category}
-            </td>
-            <td>${incident.description}</td>
-            <td>${formatTimestamp(incident.timestamp)}</td>
-            <td>
-                <span class="badge badge-status ${incident.status === 'Ouvert' ? 'badge-open' : 'badge-resolved'}">
+                <span class="badge-modern ${incident.status === 'Ouvert' ? 'badge-open' : 'badge-resolved'}">
                     ${incident.status}
                 </span>
             </td>
             <td>
-                ${incident.status === 'Ouvert' ? 
-                    `<button class="btn btn-resolve" onclick="resolveIncident(${incident.id})">
-                        ✅ Résoudre
-                    </button>` : 
-                    '<span class="text-success">✓ Résolu</span>'
-                }
+                ${incident.status === 'Ouvert' ? `
+                    <button class="btn-action btn-success" onclick="resolveIncident('${incident.id}')">
+                        Résoudre
+                    </button>
+                ` : `
+                    <button class="btn-action btn-success" disabled>
+                        Résolu
+                    </button>
+                `}
             </td>
         </tr>
     `).join('');
 }
 
-// ✅ Résoudre un incident
+// Mettre à jour les statistiques
+function updateStatistics() {
+    const total = allIncidents.length;
+    const medical = allIncidents.filter(i => i.category === 'Médical').length;
+    const security = allIncidents.filter(i => i.category === 'Sécurité').length;
+    const technical = allIncidents.filter(i => i.category === 'Technique').length;
+    
+    document.getElementById('totalIncidents').textContent = total;
+    document.getElementById('medicalCount').textContent = medical;
+    document.getElementById('securityCount').textContent = security;
+    document.getElementById('technicalCount').textContent = technical;
+}
+
+// Résoudre un incident
 async function resolveIncident(id) {
-    if (!confirm('Marquer cet incident comme résolu?')) {
+    if (!confirm('Marquer cet incident comme résolu ?')) {
         return;
     }
-
-    try {
-        // 🌐 APPEL API - Décommentez quand l'API est prête
-        /*
-        const response = await fetch(`${API_URL}/incidents/${id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ status: 'Résolu' })
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de la mise à jour');
-        }
-        */
-
-        // 🧪 MODE TEST - Mise à jour locale
+    
+    if (TEST_MODE) {
+        // MODE TEST : Mettre à jour localement
         const incident = allIncidents.find(i => i.id === id);
         if (incident) {
             incident.status = 'Résolu';
+            updateStatistics();
+            displayIncidents(allIncidents);
+            showToast('Incident marqué comme résolu', 'success');
         }
-
-        // Mettre à jour l'affichage
-        updateStats();
-        displayIncidents();
-
-        // Notification succès
-        showNotification('✅ Incident #' + id + ' marqué comme résolu');
-
+        return;
+    }
+    
+    // MODE PRODUCTION : Mettre à jour via API
+    try {
+        const response = await fetch(`${API_BASE_URL}/incidents/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'Résolu' })
+        });
+        
+        if (response.ok) {
+            loadIncidents();
+            showToast('Incident marqué comme résolu', 'success');
+        }
     } catch (error) {
-        console.error('❌ Erreur résolution:', error);
-        alert('❌ Erreur lors de la résolution de l\'incident');
+        console.error('Erreur résolution incident:', error);
+        showToast('Erreur lors de la résolution', 'danger');
     }
 }
 
-// 🔧 Obtenir l'icône de catégorie
-function getCategoryIcon(category) {
-    const icons = {
-        'Médical': '🏥',
-        'Sécurité': '🛡️',
-        'Technique': '🔧',
-        'Autre': '❓'
-    };
-    return icons[category] || '📌';
+// Filtrer les incidents
+function filterIncidents() {
+    const zoneFilter = document.getElementById('filterZone').value;
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+    
+    let filtered = allIncidents;
+    
+    if (zoneFilter) {
+        filtered = filtered.filter(i => i.zone === zoneFilter);
+    }
+    
+    if (categoryFilter) {
+        filtered = filtered.filter(i => i.category === categoryFilter);
+    }
+    
+    if (statusFilter) {
+        filtered = filtered.filter(i => i.status === statusFilter);
+    }
+    
+    displayIncidents(filtered);
 }
 
-// 📅 Formater le timestamp
-function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
+// Déconnexion
+function logout() {
+    document.getElementById('dashboardSection').style.display = 'none';
+    document.getElementById('authSection').style.display = 'block';
+    document.getElementById('adminAuthForm').reset();
+}
+
+// Fonctions utilitaires
+function formatDate(dateString) {
+    const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    
     return `${day}/${month} ${hours}:${minutes}`;
 }
 
-// 🔔 Afficher une notification
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.className = 'alert alert-success position-fixed top-0 end-0 m-3';
-    notification.style.zIndex = '9999';
-    notification.innerHTML = message;
-    
-    document.body.appendChild(notification);
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.textContent = message;
+    document.body.appendChild(toast);
     
     setTimeout(() => {
-        notification.remove();
+        toast.remove();
     }, 3000);
 }
 
-// 🎯 Event listeners
-refreshBtn.addEventListener('click', loadIncidents);
-filterZone.addEventListener('change', displayIncidents);
-filterCategory.addEventListener('change', displayIncidents);
-filterStatus.addEventListener('change', displayIncidents);
-
-// 🔄 Auto-refresh toutes les 30 secondes
-setInterval(loadIncidents, 30000);
-
-// 🚀 Charger au démarrage
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('📊 Dashboard admin chargé');
-    loadIncidents();
-});
-
-// Rendre la fonction resolveIncident accessible globalement
-window.resolveIncident = resolveIncident;
+// Auto-refresh toutes les 30 secondes (désactivé en mode test)
+if (!TEST_MODE) {
+    setInterval(() => {
+        if (document.getElementById('dashboardSection').style.display !== 'none') {
+            loadIncidents();
+        }
+    }, 30000);
+}
