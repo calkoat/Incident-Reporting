@@ -46,7 +46,7 @@ async function submitIncident() {
         };
 
         // 🌐 APPEL API - Décommentez quand l'API est prête
-        
+        /*
         const response = await fetch(`${API_URL}/incidents`, {
             method: 'POST',
             headers: {
