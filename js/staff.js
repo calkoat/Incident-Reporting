@@ -1,5 +1,5 @@
 // Configuration de l'API
-const API_BASE_URL = 'https://YOUR-AZURE-FUNCTION-APP.azurewebsites.net/api';
+const API_BASE_URL = 'https://r5f7kujvb1.execute-api.eu-north-1.amazonaws.com/default/CAN2025-incident-notifier';
 
 // Gestion de la soumission du formulaire
 document.getElementById('incidentForm').addEventListener('submit', async (e) => {
