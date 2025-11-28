@@ -6,8 +6,7 @@
     <title>Signalement Incident - CAN 2025</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-
-
+        /* ------------------ TON CSS ORIGINAL ------------------ */
         * {
             margin: 0;
             padding: 0;
@@ -16,16 +15,15 @@
 
         .banner-can {
             width: 100%;
-            height: 220px;  /* Ajuste la hauteur selon tes besoins */
+            height: 220px;
             background-image: url('can.png');
-            background-size: cover;        /* Remplit toute la largeur */
-            background-position: center;   /* Centre l’image */
+            background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
             border-bottom: 1px solid rgba(102, 126, 234, 0.3);
             margin-bottom: 25px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.4);
         }
-
 
         body {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
@@ -117,11 +115,6 @@
             color: #666;
         }
 
-        .form-select option {
-            background: #1a1a2e;
-            color: #e0e0e0;
-        }
-
         textarea.form-control {
             resize: vertical;
             min-height: 120px;
@@ -148,115 +141,16 @@
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-submit:active {
-            transform: translateY(0);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .alert {
-            border-radius: 12px;
-            border: none;
-            padding: 16px;
-            margin-top: 20px;
-            animation: slideIn 0.3s ease;
-        }
-
-        .alert-success {
-            background: rgba(40, 167, 69, 0.2);
-            border: 1px solid rgba(40, 167, 69, 0.4);
-            color: #5eff5e;
-        }
-
-        .alert-danger {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid rgba(220, 53, 69, 0.4);
-            color: #ff6b6b;
-        }
-
-        .footer-link {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .footer-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .footer-link a:hover {
-            color: #764ba2;
-        }
-
         @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1a1a2e;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 4px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .card {
-                padding: 25px;
-            }
-
-            .logo-header h1 {
-                font-size: 2rem;
-            }
-
-            .logo-container img {
-                max-width: 150px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -273,9 +167,7 @@
             <form id="incidentForm">
                 <div class="form-group">
                     <label for="pin" class="form-label">Code PIN Staff</label>
-                    <input type="password" class="form-control" id="pin" 
-                           placeholder="4 chiffres" 
-                           maxlength="4" required>
+                    <input type="password" class="form-control" id="pin" maxlength="4" required>
                 </div>
 
                 <div class="form-group">
@@ -304,8 +196,7 @@
 
                 <div class="form-group">
                     <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" 
-                              placeholder="Décrivez l'incident de manière précise..." required></textarea>
+                    <textarea class="form-control" id="description" required></textarea>
                 </div>
 
                 <button type="submit" class="btn-submit" id="submitBtn">
@@ -321,6 +212,48 @@
         </div>
     </div>
 
-    <script src="js/staff.js"></script>
+    <!-- -------------------- TON CODE JAVASCRIPT AJOUTÉ -------------------- -->
+    <script>
+        document.getElementById('submitBtn').onclick = async function(event) {
+
+            event.preventDefault(); // Empêche le rechargement de la page
+
+            const zone = document.getElementById('zone').value;
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+
+            if (!zone || !category || !description) {
+                alert('⚠️ Veuillez remplir tous les champs');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://r5f7kujvb1.execute-api.eu-north-1.amazonaws.com/default/CAN2025-incident-notifier', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        zone: zone,
+                        category: category,
+                        description: description
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert(`✅ Email envoyé !\n\nZone: ${zone}\nCatégorie: ${category}\nDescription: ${description}`);
+                    document.getElementById('incidentForm').reset();
+                    console.log('MessageId:', result.messageId);
+                } else {
+                    alert('❌ Erreur lors de l’envoi : ' + (result.error || 'Inconnue'));
+                }
+
+            } catch (error) {
+                alert('❌ Erreur de connexion.');
+                console.error(error);
+            }
+        };
+    </script>
+
 </body>
 </html>
