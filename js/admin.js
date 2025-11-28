@@ -3,7 +3,7 @@
 
 // ⚙️ CONFIGURATION API
 // IMPORTANT: Remplacez cette URL par votre vraie API backend
-const API_URL = 'https://incidentdb.documents.azure.com/;AccountKey=kFOrNuez8niq1mQ9ibeZtvEEcfvc7E0Gxp1aYUaj8aqIXMo9h3nzelJKgnVOQ2a85ieSCPytVtgfACDb71YlUQ==';
+const API_URL = //'https://incidentdb.documents.azure.com/;AccountKey=kFOrNuez8niq1mQ9ibeZtvEEcfvc7E0Gxp1aYUaj8aqIXMo9h3nzelJKgnVOQ2a85ieSCPytVtgfACDb71YlUQ==';
 
 
 
