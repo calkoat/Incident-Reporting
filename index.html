@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -236,12 +236,14 @@
         </div>
     </div>
 
-    
+    <!-- ✅ JAVASCRIPT QUI FONCTIONNE - COPIÉ DEPUIS LE TEST -->
     <script>
         document.getElementById('submitBtn').addEventListener('click', async function(event) {
-            event.preventDefault(); // Empêche le rechargement de la page
+            event.preventDefault();
 
-            // Récupération des valeurs avec les BONS IDs
+            console.log('🔄 Démarrage de l\'envoi...');
+            
+            // Récupération des valeurs
             const pin = document.getElementById('pin').value;
             const zone = document.getElementById('zoneSelect').value;
             const category = document.getElementById('categorySelect').value;
@@ -253,7 +255,6 @@
                 return;
             }
 
-            // Validation basique du PIN (optionnel)
             if (pin.length !== 4) {
                 alert('⚠️ Le code PIN doit contenir 4 chiffres');
                 return;
@@ -265,7 +266,7 @@
             submitBtn.textContent = '📤 Envoi en cours...';
 
             try {
-                // ✅ URL CORRIGÉE - Avec /notify à la fin
+                // ✅ MÊME LOGIQUE QUE LE TEST QUI FONCTIONNE
                 const response = await fetch('https://iecigpjt1b.execute-api.eu-north-1.amazonaws.com/test/notify', {
                     method: 'POST',
                     headers: { 
@@ -278,30 +279,53 @@
                     })
                 });
                 
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    alert(`✅ Email de notification envoyé avec succès !\n\nDétails:\nZone: ${zone}\nCatégorie: ${category}\nDescription: ${description}\n\nMessageId: ${result.messageId}`);
+                console.log('📤 Status:', response.status);
+                console.log('📤 Headers:', [...response.headers.entries()]);
+                
+                // Traitement de la réponse (même logique que le test)
+                const result = await response.text();
+                console.log('📤 Response:', result);
+                
+                let parsedResult;
+                try {
+                    parsedResult = JSON.parse(result);
+                } catch (e) {
+                    parsedResult = { error: 'Réponse non-JSON reçue', rawResponse: result };
+                }
+                
+                if (response.ok && parsedResult.success) {
+                    alert(`✅ Email de notification envoyé avec succès !\n\nDétails:\nZone: ${zone}\nCatégorie: ${category}\nDescription: ${description}\n\nMessageId: ${parsedResult.messageId}\n\n📧 Vérifiez votre boîte: mouad.bouski@esi.ac.ma`);
                     
                     // Réinitialiser le formulaire
                     document.getElementById('incidentForm').reset();
                     
-                    console.log('✅ MessageId:', result.messageId);
+                    console.log('✅ MessageId:', parsedResult.messageId);
                     console.log('📧 Email envoyé à: mouad.bouski@esi.ac.ma');
+                    console.log('✅ URL utilisée:', 'https://iecigpjt1b.execute-api.eu-north-1.amazonaws.com/test/notify');
+                    
                 } else {
-                    alert('❌ Erreur lors de l\'envoi : ' + (result.error || 'Problème inconnu'));
-                    console.error('Erreur API:', result);
+                    console.error('❌ Erreur API:', parsedResult);
+                    alert('❌ Erreur lors de l\'envoi: ' + (parsedResult.error || 'Problème inconnu'));
                 }
 
             } catch (error) {
-                alert('❌ Erreur de connexion. Vérifiez la configuration CORS dans API Gateway.');
-                console.error('Erreur réseau:', error);
+                console.error('❌ Erreur réseau complète:', error);
+                
+                // Analyse du type d'erreur (comme dans le test)
+                let errorType = 'Inconnue';
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorType = 'CORS ou réseau';
+                } else if (error.name === 'SyntaxError') {
+                    errorType = 'Réponse non-JSON';
+                }
+                
+                alert(`❌ Erreur de connexion (${errorType}).\nVérifiez la configuration CORS dans API Gateway.\n\nErreur: ${error.message}`);
+                
             } finally {
                 // Réactiver le bouton
                 submitBtn.disabled = false;
                 submitBtn.textContent = '🚨 Envoyer le Signalement';
             }
-            
         });
 
         // Validation automatique du PIN (seulement des chiffres)
