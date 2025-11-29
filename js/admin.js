@@ -3,7 +3,6 @@
 
 // ⚙️ CONFIGURATION API
 // IMPORTANT: Remplacez cette URL par votre vraie API backend
-const API_URL = //'https://incidentdb.documents.azure.com/;AccountKey=kFOrNuez8niq1mQ9ibeZtvEEcfvc7E0Gxp1aYUaj8aqIXMo9h3nzelJKgnVOQ2a85ieSCPytVtgfACDb71YlUQ==';
 
 
 document.getElementById("adminAuthForm").addEventListener("submit", (e) => {
@@ -18,7 +17,7 @@ document.getElementById("adminAuthForm").addEventListener("submit", (e) => {
 
 
 
-    
+
 // 📝 Récupération des éléments DOM
 const totalCount = document.getElementById('totalIncidents');
 const medicalCount = document.getElementById('medicalCount');
@@ -31,6 +30,7 @@ const filterCategory = document.getElementById('filterCategory');
 const filterStatus = document.getElementById('filterStatus');
 const refreshBtn = document.getElementById('refreshBtn');
 
+    
 
 // 💾 Stockage local des incidents
 let allIncidents = [];
@@ -38,15 +38,7 @@ let allIncidents = [];
 // 🌐 Charger les incidents depuis l'API
 async function loadIncidents() {
     try {
-        // 🌐 APPEL API - Décommentez quand l'API est prête
-        /*const response = await fetch(`${API_URL}/incidents`);
-        
-        if (!response.ok) {
-            throw new Error('Erreur lors du chargement');
-        }
-        
-        allIncidents = await response.json();
-        */
+       
 
         // 🧪 MODE TEST - Données de démonstration
         allIncidents = [
@@ -110,13 +102,13 @@ async function loadIncidents() {
 
 // 📊 Mettre à jour les statistiques
 function updateStats() {
-    const open = allIncidents.filter(i => i.status === 'Ouvert').length;
-    const resolved = allIncidents.filter(i => i.status === 'Résolu').length;
-    
     totalCount.textContent = allIncidents.length;
-    openCount.textContent = open;
-    resolvedCount.textContent = resolved;
+
+    medicalCount.textContent = allIncidents.filter(i => i.category === "Médical").length;
+    securityCount.textContent = allIncidents.filter(i => i.category === "Sécurité").length;
+    technicalCount.textContent = allIncidents.filter(i => i.category === "Technique").length;
 }
+
 
 // 📋 Afficher les incidents dans le tableau
 function displayIncidents() {
@@ -186,21 +178,8 @@ async function resolveIncident(id) {
     }
 
     try {
-        // 🌐 APPEL API - Décommentez quand l'API est prête
-       /* 
-        const response = await fetch(`${API_URL}/incidents/${id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ status: 'Résolu' })
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de la mise à jour');
-        }
         
-*/
+
         // 🧪 MODE TEST - Mise à jour locale
         const incident = allIncidents.find(i => i.id === id);
         if (incident) {
